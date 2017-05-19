@@ -41,8 +41,10 @@ data_map = {
     ],
     "Tunnel_reverse": "Tu",
     "GigabitEthernet": [
+      "GigabitEthernet",
       "GigEthernet",
       "GigE",
+      "Gig",
       "GigEth",
       "GE",
       "Gi"
@@ -52,10 +54,31 @@ data_map = {
       "TenGigabitEthernet",
       "TenGigEthernet",
       "TenGigEth",
+      "TenGigE",
+      "TenGig",
       "T",
+      "Xe"
       "Te"
     ],
     "TenGigabitEthernet_reverse": "Te",
+    "FortyGigabitEthernet": [
+      "FortyGigabitEthernet",
+      "FortyGigEthernet",
+      "FortyGigEth",
+      "FortyGigE",
+      "FortyGig",
+      "FGE"
+      "Fo"
+    ],
+    "FortyGigabitEthernet_reverse": "Fo",
+    "HundredGigabitEthernet": [
+      "HundredGigabitEthernet",
+      "HundredGigEthernet",
+      "HundredGigEth",
+      "HundredGigE",
+      "Hu"
+    ],
+    "HundredGigabitEthernet_reverse": "Hu",
     "Serial": [
       "Serial",
       "Se",
@@ -73,6 +96,10 @@ data_map = {
       "Mu"
     ],
     "Multilink_reverse": "Mu",
+    "MFR": [
+      "MFR"
+    ],
+    "MFR_reverse": "MFR",
     "PortChannel": [
       "PortChannel",
       "Port-Channel",
@@ -89,6 +116,26 @@ data_map = {
       "Lo"
     ],
     "Loopback_reverse": "Lo",
+    "Fddi": [
+      "Fddi",
+      "FD"
+    ],
+    "Fddi_reverse": "FD",
+    "Virtual-Access": [
+      "Virtual-Access",
+      "Vi"
+    ],
+    "Virtual-Access_reverse": "Vi",
+    "Virtual-Template": [
+      "Virtual-Template",
+      "Vt"
+    ],
+    "Virtual-Template_reverse": "Vt",
+    "EOBC": [
+      "EOBC",
+      "EO"
+    ],
+    "EOBC_reverse": "EO",
     "ATM": [
       "ATM",
       "AT"
@@ -109,6 +156,7 @@ data_map = {
       "FastEthernet": [
         "FastEthernet",
         "FastEth",
+        "FastE",
         "Fast",
         "Fas",
         "FE",
@@ -119,7 +167,7 @@ data_map = {
   }
 }
 
-def split_on_match(split_interface):
+def _split_base_name(split_interface):
     '''
     simple fuction to split on first digit, slash,  or space match
     '''
@@ -127,34 +175,38 @@ def split_on_match(split_interface):
     tail = split_interface[len(head):].lstrip()
     return head, tail
 
-def normalize_interface(interface, dev_os, reverse=False):
+def normalize_interface(interface, device_os, short=False):
     '''
-    fuction to retun interface normalize
+    Function takes in a raw interface and returns a standard interface name.
+    e.g. "Fa 1/0" returns as "FastEthernet1/0". The default bucket should work
+    in most cases, but can break out OS specific. Additionally can return the
+    short name if desired. e.g. "FastEthernet1/1" returns as Fa1/1.
+    
+    Based on harmonizeInts from cpan Net::Telnet::Cisco::IOS package
     '''
 
     all_interfaces = data_map['all_interfaces']
-    dev_os_yml = data_map['dev_os']
 
-    strip_interface = split_on_match(interface)
+    strip_interface = _split_base_name(interface)
     interface_type = strip_interface[0]
     interface_number = strip_interface[1]
 
-    # if the dev_os is defined, check if interface is defined, if so, over write
+    # if the device_os is defined, check if interface is defined, if so, over write
     # this list in all_interfaces
-    if dev_os in dev_os_yml:
+    if device_os in data_map['device_os']:
         for key, value in all_interfaces.items():
-            if key in dev_os_yml[dev_os]:
-                all_interfaces[key] = dev_os_yml[dev_os][key]
+            if key in data_map['device_os'][device_os]:
+                all_interfaces[key] = data_map['device_os'][device_os][key]
 
     # go through dictionary and each list within value pair,
     # if match, pull out either long or short form
     for key, value in all_interfaces.items():
         for current_interface in value:
             if current_interface.lower() == interface_type.lower():
-                if reverse:
-                    return all_interfaces[key + '_reverse'] + str(interface_number)
+                if short:
+                    return all_interfaces[key + '_short'] + str(interface_number)
                 else:
-                    return all_interfaces[key][0] + str(interface_number)
+                    return key + str(interface_number)
     # if nothing matched, at least return the original'
     return interface
 
