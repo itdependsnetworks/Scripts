@@ -13,6 +13,7 @@
 from ansible import errors
 
 data_map = {
+data_map = {
   "all_interfaces": {
     "Ethernet": [
       "Ethernet",
@@ -23,6 +24,8 @@ data_map = {
     "FastEthernet": [
       "FastEthernet",
       "FastEth",
+      "FastE",
+      "Fast",
       "Fas",
       "FE",
       "Fa"
@@ -43,9 +46,9 @@ data_map = {
     "GigabitEthernet": [
       "GigabitEthernet",
       "GigEthernet",
+      "GigEth",
       "GigE",
       "Gig",
-      "GigEth",
       "GE",
       "Gi"
     ],
@@ -54,10 +57,11 @@ data_map = {
       "TenGigabitEthernet",
       "TenGigEthernet",
       "TenGigEth",
-      "TenGigE",
       "TenGig",
+      "TeGig",
+      "Ten",
       "T",
-      "Xe"
+      "Xe",
       "Te"
     ],
     "TenGigabitEthernet_reverse": "Te",
@@ -67,7 +71,8 @@ data_map = {
       "FortyGigEth",
       "FortyGigE",
       "FortyGig",
-      "FGE"
+      "FGE",
+      "FO",
       "Fo"
     ],
     "FortyGigabitEthernet_reverse": "Fo",
@@ -76,6 +81,7 @@ data_map = {
       "HundredGigEthernet",
       "HundredGigEth",
       "HundredGigE",
+      "HundredGig",
       "Hu"
     ],
     "HundredGigabitEthernet_reverse": "Hu",
@@ -143,7 +149,7 @@ data_map = {
     "ATM_reverse": "At"
   },
   "dev_os": {
-    "eos": {
+    "special_os": {
       "Ethernet": [
         "Ethernet",
         "Ether",
@@ -151,21 +157,10 @@ data_map = {
         "Et"
       ],
       "Ethernet_reverse": "Et"
-    },
-    "cisco": {
-      "FastEthernet": [
-        "FastEthernet",
-        "FastEth",
-        "FastE",
-        "Fast",
-        "Fas",
-        "FE",
-        "Fa"
-      ],
-      "FastEthernet_reverse": "Fa"
     }
   }
 }
+
 
 def _split_base_name(split_interface):
     '''
